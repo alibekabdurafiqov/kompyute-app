@@ -1,0 +1,24 @@
+{
+  "users": [],
+  "registeredUsers": [
+    {
+      "id": 1,
+      "fullname": "Alibek Abdurafiqov Abdurafiqov",
+      "email": "aligetorn1@gmail.com",
+      "phone": "+998903981604",
+      "password": "$2a$10$jep8Fc1MlxM0H7zGclrgBOuV.9xwuFxX/6bqpu6/m46iotDBUfFZe",
+      "registeredAt": "2025-05-29T08:15:00.468Z",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "fullname": "Ali",
+      "email": "aligetorn2@gmail.com",
+      "phone": "903991604",
+      "password": "$2a$10$CfT4fXdd0yBNvdSEYbgZjuqqqIgH6jFxDhYBIodJ0yiA9t1B86lGa",
+      "registeredAt": "2025-05-29T08:52:26.560Z",
+      "status": "inactive",
+      "role": "master"
+    }
+  ]
+}

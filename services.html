@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xizmatlar - PC Service</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .services-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-name {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .service-description {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .service-price {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .order-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .order-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .order-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .my-orders {
+            margin-top: 3rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .orders-table th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .timer {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="services-container">
+        <div class="services-header">
+            <h1>Bizning xizmatlar</h1>
+            <p>Kompyuter ta'mirlash va texnik xizmat ko'rsatish bo'yicha professional yordamimizdan foydalaning</p>
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+            <!-- Services will be loaded here -->
+        </div>
+
+        <div class="my-orders">
+            <h2>Mening buyurtmalarim</h2>
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Xizmat</th>
+                        <th>Sana</th>
+                        <th>Narx</th>
+                        <th>Holat</th>
+                        <th>Qolgan vaqt</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Orders will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buyurtma berish</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="orderForm" class="order-form">
+                <input type="hidden" id="serviceId" name="serviceId">
+                <div class="form-group">
+                    <label for="problem">Muammoni tavsiflang</label>
+                    <textarea id="problem" name="problem" required></textarea>
+                </div>
+                <button type="submit" class="order-btn">Buyurtma berish</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Load services
+        async function loadServices() {
+            try {
+                const response = await fetch('/api/services');
+                const data = await response.json();
+                
+                const servicesGrid = document.getElementById('servicesGrid');
+                servicesGrid.innerHTML = '';
+
+                data.services.forEach(service => {
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    card.innerHTML = `
+                        <h3 class="service-name">${service.name}</h3>
+                        <p class="service-description">${service.description}</p>
+                        <p class="service-price">${service.minPrice.toLocaleString()} - ${service.maxPrice.toLocaleString()} so'm</p>
+                        <button class="order-btn" onclick="showOrderModal(${service.id})">Buyurtma berish</button>
+                    `;
+                    servicesGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Xizmatlar ro\'yxatini yuklashda xatolik');
+            }
+        }
+
+        // Load user orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/orders/my', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const orders = await response.json();
+                
+                const tableBody = document.getElementById('ordersTableBody');
+                tableBody.innerHTML = '';
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    
+                    let statusBadgeClass = '';
+                    let statusText = '';
+                    
+                    switch(order.status) {
+                        case 'pending':
+                            statusBadgeClass = 'status-pending';
+                            statusText = 'Kutilmoqda';
+                            break;
+                        case 'approved':
+                            statusBadgeClass = 'status-approved';
+                            statusText = 'Tasdiqlangan';
+                            break;
+                        case 'in_progress':
+                            statusBadgeClass = 'status-in-progress';
+                            statusText = 'Jarayonda';
+                            break;
+                        case 'completed':
+                            statusBadgeClass = 'status-completed';
+                            statusText = 'Bajarildi';
+                            break;
+                    }
+
+                    let timeLeft = '';
+                    if (order.estimatedTime && order.startTime) {
+                        const endTime = new Date(order.startTime).getTime() + (order.estimatedTime * 60 * 60 * 1000);
+                        const now = new Date().getTime();
+                        const diff = endTime - now;
+                        
+                        if (diff > 0) {
+                            const hours = Math.floor(diff / (1000 * 60 * 60));
+                            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            timeLeft = `${hours} soat ${minutes} daqiqa`;
+                        }
+                    }
+
+                    row.innerHTML = `
+                        <td>${order.serviceName}</td>
+                        <td>${new Date(order.createdAt).toLocaleString()}</td>
+                        <td>${order.price ? order.price.toLocaleString() + ' so\'m' : 'Belgilanmagan'}</td>
+                        <td><span class="status-badge ${statusBadgeClass}">${statusText}</span></td>
+                        <td class="timer">${timeLeft || '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Buyurtmalar ro\'yxatini yuklashda xatolik');
+            }
+        }
+
+        // Show order modal
+        function showOrderModal(serviceId) {
+            const modal = document.getElementById('orderModal');
+            document.getElementById('serviceId').value = serviceId;
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        const modal = document.getElementById('orderModal');
+        const closeBtn = document.querySelector('.close');
+        
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Handle order form submission
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const orderData = {
+                serviceId: formData.get('serviceId'),
+                problem: formData.get('problem')
+            };
+            
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (response.ok) {
+                    alert('Buyurtmangiz muvaffaqiyatli qabul qilindi');
+                    modal.style.display = 'none';
+                    e.target.reset();
+                    loadOrders();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Serverda xatolik yuz berdi');
+            }
+        });
+
+        // Update timers every minute
+        setInterval(loadOrders, 60000);
+
+        // Load initial data
+        loadServices();
+        loadOrders();
+    </script>
+</body>
+</html> 

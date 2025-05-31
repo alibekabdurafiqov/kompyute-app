@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ro'yxatdan o'tish - PC Service</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(rgba(37, 99, 235, 0.1), rgba(30, 64, 175, 0.1));
+        }
+
+        .auth-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-box h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .auth-form input {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .auth-form input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .auth-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .auth-links {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .auth-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1>Ro'yxatdan o'tish</h1>
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="fullname">To'liq ism</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefon raqam</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Parol</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Parolni tasdiqlang</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="auth-btn">Ro'yxatdan o'tish</button>
+            </form>
+            <div class="auth-links">
+                <p>Akkountingiz bormi? <a href="login.html">Kirish</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const errorMessages = {
+            required: 'Barcha maydonlar to\'ldirilishi shart',
+            email: 'Email manzil noto\'g\'ri',
+            phone: 'Telefon raqam noto\'g\'ri',
+            password: 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak',
+            passwordMatch: 'Parollar bir xil emas'
+        };
+
+        function showError(message) {
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            registerForm.insertBefore(errorDiv, registerForm.firstChild);
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePhone(phone) {
+            const re = /^\+?[0-9]{10,13}$/;
+            return re.test(phone);
+        }
+        
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(registerForm);
+            const userData = {
+                fullname: formData.get('fullname'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password')
+            };
+            
+            // Validation
+            if (!userData.fullname || !userData.email || !userData.phone || !userData.password) {
+                showError(errorMessages.required);
+                return;
+            }
+
+            if (!validateEmail(userData.email)) {
+                showError(errorMessages.email);
+                return;
+            }
+
+            if (!validatePhone(userData.phone)) {
+                showError(errorMessages.phone);
+                return;
+            }
+
+            if (userData.password.length < 6) {
+                showError(errorMessages.password);
+                return;
+            }
+
+            if (userData.password !== formData.get('confirmPassword')) {
+                showError(errorMessages.passwordMatch);
+                return;
+            }
+            
+            try {
+                console.log('Sending registration data:', { ...userData, password: '[HIDDEN]' });
+                
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Muvaffaqiyatli ro\'yxatdan o\'tdingiz!');
+                    window.location.href = 'login.html';
+                } else {
+                    showError(data.error || 'Xatolik yuz berdi');
+                    console.error('Registration error:', data);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                showError('Serverga ulanishda xatolik yuz berdi');
+            }
+        });
+    </script>
+</body>
+</html> 

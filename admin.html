@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - PC Service</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-title {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .admin-logout {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .admin-logout:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .users-table th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .users-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .status-active {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-inactive {
+            background: #ef4444;
+            color: white;
+        }
+
+        .role-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            background: #f3f4f6;
+        }
+
+        .role-master {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-user {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .add-user-btn {
+            background: #10b981;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .add-user-btn i {
+            font-size: 1.2rem;
+        }
+
+        .add-user-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .add-user-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .orders-section {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .orders-filters {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .orders-filters select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .orders-table th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        #comments {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .customer-details {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .customer-details p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">Admin Panel</h1>
+            <div class="admin-actions">
+                <button class="add-user-btn" onclick="showAddUserModal()">
+                    <i class="fas fa-user-plus"></i>
+                    Yangi foydalanuvchi
+                </button>
+                <a href="#" class="admin-logout" id="logoutBtn">Chiqish</a>
+            </div>
+        </div>
+
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h3>Jami foydalanuvchilar</h3>
+                <div class="number" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Bugungi ro'yxatdan o'tganlar</h3>
+                <div class="number" id="todayUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Faol foydalanuvchilar</h3>
+                <div class="number" id="activeUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Masterlar</h3>
+                <div class="number" id="totalMasters">0</div>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <h2>Buyurtmalar</h2>
+            <div class="orders-filters">
+                <select id="statusFilter">
+                    <option value="all">Barcha holatlar</option>
+                    <option value="pending">Kutilmoqda</option>
+                    <option value="approved">Tasdiqlangan</option>
+                    <option value="in_progress">Jarayonda</option>
+                    <option value="completed">Bajarildi</option>
+                    <option value="cancelled">Bekor qilingan</option>
+                </select>
+            </div>
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mijoz</th>
+                        <th>Xizmat</th>
+                        <th>Muammo</th>
+                        <th>Sana</th>
+                        <th>Narx</th>
+                        <th>Holat</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Orders will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Details Modal -->
+        <div id="orderModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Buyurtma ma'lumotlari</h2>
+                    <span class="close" onclick="closeOrderModal()">&times;</span>
+                </div>
+                <form id="orderForm" class="order-form">
+                    <input type="hidden" id="orderId">
+                    <div class="form-group">
+                        <label>Mijoz ma'lumotlari</label>
+                        <div id="customerInfo" class="info-box"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Xizmat turi</label>
+                        <div id="serviceInfo" class="info-box"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Muammo tavsifi</label>
+                        <div id="problemInfo" class="info-box"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderStatus">Holat</label>
+                        <select id="orderStatus" name="status" required>
+                            <option value="pending">Kutilmoqda</option>
+                            <option value="approved">Tasdiqlangan</option>
+                            <option value="in_progress">Jarayonda</option>
+                            <option value="completed">Bajarildi</option>
+                            <option value="cancelled">Bekor qilingan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderPrice">Narx (so'm)</label>
+                        <input type="number" id="orderPrice" name="price" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="estimatedTime">Taxminiy vaqt (soat)</label>
+                        <input type="number" id="estimatedTime" name="estimatedTime" min="0" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="comments">Izohlar</label>
+                        <textarea id="comments" name="comments" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Saqlash</button>
+                </form>
+            </div>
+        </div>
+
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>To'liq ism</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Ro'yxatdan o'tgan sana</th>
+                    <th>Status</th>
+                    <th>Rol</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+                <!-- Users will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yangi foydalanuvchi qo'shish</h2>
+                <span class="close" onclick="closeAddUserModal()">&times;</span>
+            </div>
+            <form id="addUserForm" class="add-user-form">
+                <div class="form-group">
+                    <label for="fullname">To'liq ism</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefon</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Parol</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="active">Faol</option>
+                        <option value="inactive">Faol emas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="role">Rol</label>
+                    <select id="role" name="role">
+                        <option value="user">Foydalanuvchi</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Load users data
+        let users = []; // Global o'zgaruvchi qo'shish
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    users = await response.json(); // Global o'zgaruvchiga ma'lumotlarni saqlash
+                    updateStats(users);
+                    displayUsers(users);
+                } else {
+                    throw new Error('Failed to load users');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Foydalanuvchilar ma\'lumotlarini yuklashda xatolik');
+            }
+        }
+
+        // Update statistics
+        function updateStats(users) {
+            const today = new Date().toDateString();
+            
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('todayUsers').textContent = users.filter(user => 
+                new Date(user.registeredAt).toDateString() === today
+            ).length;
+            document.getElementById('activeUsers').textContent = users.filter(user => 
+                user.status === 'active'
+            ).length;
+            document.getElementById('totalMasters').textContent = users.filter(user => 
+                user.role === 'master'
+            ).length;
+        }
+
+        // Display users in table
+        function displayUsers(users) {
+            const tableBody = document.getElementById('usersTableBody');
+            tableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.fullname}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>${new Date(user.registeredAt).toLocaleString()}</td>
+                    <td>
+                        <span class="status-badge ${user.status === 'active' ? 'status-active' : 'status-inactive'}">
+                            ${user.status === 'active' ? 'Faol' : 'Faol emas'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="role-badge ${user.role === 'master' ? 'role-master' : 'role-user'}">
+                            ${user.role === 'master' ? 'Master' : 'Foydalanuvchi'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editUser(${user.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Edit user
+        async function editUser(userId) {
+            try {
+                const user = users.find(u => u.id === userId);
+                if (!user) {
+                    throw new Error('Foydalanuvchi topilmadi');
+                }
+
+                const response = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        status: user.status === 'active' ? 'inactive' : 'active'
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Foydalanuvchi holati muvaffaqiyatli yangilandi');
+                    loadUsers();
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Foydalanuvchi holatini yangilashda xatolik');
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            if (confirm('Haqiqatan ham bu foydalanuvchini o\'chirmoqchimisiz?')) {
+                try {
+                    const response = await fetch(`/api/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        loadUsers();
+                    } else {
+                        throw new Error('Failed to delete user');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Foydalanuvchini o\'chirishda xatolik');
+                }
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // Show add user modal
+        function showAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'block';
+        }
+
+        // Close add user modal
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+        }
+
+        // Handle add user form submission
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = {
+                fullname: formData.get('fullname'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password'),
+                status: formData.get('status'),
+                role: formData.get('role')
+            };
+            
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (response.ok) {
+                    alert('Foydalanuvchi muvaffaqiyatli qo\'shildi');
+                    closeAddUserModal();
+                    loadUsers();
+                    e.target.reset();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Serverda xatolik yuz berdi');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addUserModal');
+            if (event.target === modal) {
+                closeAddUserModal();
+            }
+        }
+
+        // Load users when page loads
+        loadUsers();
+
+        // Load orders
+        async function loadOrders(status = 'all') {
+            try {
+                const response = await fetch('/api/orders', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const orders = await response.json();
+                    
+                    // Filter orders by status if needed
+                    const filteredOrders = status === 'all' 
+                        ? orders 
+                        : orders.filter(order => order.status === status);
+
+                    // Display orders
+                    const tableBody = document.getElementById('ordersTableBody');
+                    tableBody.innerHTML = '';
+
+                    filteredOrders.forEach(order => {
+                        const row = document.createElement('tr');
+                        
+                        let statusBadgeClass = '';
+                        let statusText = '';
+                        
+                        switch(order.status) {
+                            case 'pending':
+                                statusBadgeClass = 'status-pending';
+                                statusText = 'Kutilmoqda';
+                                break;
+                            case 'approved':
+                                statusBadgeClass = 'status-approved';
+                                statusText = 'Tasdiqlangan';
+                                break;
+                            case 'in_progress':
+                                statusBadgeClass = 'status-in-progress';
+                                statusText = 'Jarayonda';
+                                break;
+                            case 'completed':
+                                statusBadgeClass = 'status-completed';
+                                statusText = 'Bajarildi';
+                                break;
+                            case 'cancelled':
+                                statusBadgeClass = 'status-cancelled';
+                                statusText = 'Bekor qilingan';
+                                break;
+                        }
+
+                        row.innerHTML = `
+                            <td>${order.id}</td>
+                            <td>
+                                <div class="customer-details">
+                                    <p><strong>${order.user.fullname}</strong></p>
+                                    <p>${order.user.phone}</p>
+                                </div>
+                            </td>
+                            <td>${order.serviceName}</td>
+                            <td>${order.problem}</td>
+                            <td>${new Date(order.createdAt).toLocaleString()}</td>
+                            <td>${order.price ? order.price.toLocaleString() + ' so\'m' : '-'}</td>
+                            <td>
+                                <span class="status-badge ${statusBadgeClass}">
+                                    ${statusText}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn edit-btn" onclick="showOrderDetails(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    throw new Error('Failed to load orders');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Buyurtmalar ro\'yxatini yuklashda xatolik');
+            }
+        }
+
+        // Show order details
+        function showOrderDetails(order) {
+            const modal = document.getElementById('orderModal');
+            document.getElementById('orderId').value = order.id;
+            document.getElementById('orderStatus').value = order.status;
+            document.getElementById('orderPrice').value = order.price || '';
+            document.getElementById('estimatedTime').value = order.estimatedTime || '';
+            document.getElementById('comments').value = order.comments || '';
+
+            document.getElementById('customerInfo').innerHTML = `
+                <div class="customer-details">
+                    <p><strong>${order.user.fullname}</strong></p>
+                    <p>Tel: ${order.user.phone}</p>
+                    <p>Email: ${order.user.email}</p>
+                </div>
+            `;
+
+            document.getElementById('serviceInfo').textContent = order.serviceName;
+            document.getElementById('problemInfo').textContent = order.problem;
+
+            modal.style.display = 'block';
+        }
+
+        // Close order modal
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        // Handle order form submission
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const orderId = document.getElementById('orderId').value;
+            const formData = new FormData(e.target);
+            const orderData = {
+                status: formData.get('status'),
+                price: formData.get('price') ? parseInt(formData.get('price')) : null,
+                estimatedTime: formData.get('estimatedTime') ? parseFloat(formData.get('estimatedTime')) : null,
+                comments: formData.get('comments')
+            };
+            
+            try {
+                const response = await fetch(`/api/orders/${orderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (response.ok) {
+                    alert('Buyurtma muvaffaqiyatli yangilandi');
+                    closeOrderModal();
+                    loadOrders(document.getElementById('statusFilter').value);
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Serverda xatolik yuz berdi');
+            }
+        });
+
+        // Handle status filter change
+        document.getElementById('statusFilter').addEventListener('change', (e) => {
+            loadOrders(e.target.value);
+        });
+
+        // Load orders when page loads
+        loadOrders();
+    </script>
+</body>
+</html> 

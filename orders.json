@@ -1,0 +1,40 @@
+{
+  "orders": [
+    {
+      "id": 1,
+      "userId": 1,
+      "serviceId": 2,
+      "serviceName": "Windows o'rnatish",
+      "problem": "dsfd",
+      "status": "completed",
+      "createdAt": "2025-05-29T10:42:56.526Z",
+      "price": 200,
+      "estimatedTime": 2,
+      "startTime": null
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "serviceId": 1,
+      "serviceName": "Kompyuter ta'mirlash",
+      "problem": "dsd",
+      "status": "pending",
+      "createdAt": "2025-05-29T11:19:38.884Z",
+      "price": 200000,
+      "estimatedTime": 3.5,
+      "startTime": null
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "serviceId": 1,
+      "serviceName": "Kompyuter ta'mirlash",
+      "problem": "ddss",
+      "status": "pending",
+      "createdAt": "2025-05-30T07:37:25.358Z",
+      "price": null,
+      "estimatedTime": null,
+      "startTime": null
+    }
+  ]
+}

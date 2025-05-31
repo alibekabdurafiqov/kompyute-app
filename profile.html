@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - PC Service</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .profile-email {
+            color: var(--text-secondary);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .profile-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .service-content {
+            padding: 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .service-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .service-price {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .order-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .orders-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .order-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-service {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .order-details {
+            color: var(--text-secondary);
+        }
+
+        .order-price {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar"></div>
+            <div class="profile-info">
+                <h1 class="profile-name" id="profileName"></h1>
+                <p class="profile-email" id="profileEmail"></p>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-primary" onclick="showEditProfileModal()">
+                    Profilni tahrirlash
+                </button>
+                <button class="btn btn-secondary" id="logoutBtn">
+                    Chiqish
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-tabs">
+            <button class="tab-button active" onclick="showTab('services')">Xizmatlar</button>
+            <button class="tab-button" onclick="showTab('orders')">Buyurtmalarim</button>
+            <button class="tab-button" onclick="showTab('settings')">Sozlamalar</button>
+        </div>
+
+        <!-- Xizmatlar -->
+        <div id="services" class="tab-content active">
+            <div class="services-grid" id="servicesGrid">
+                <!-- Services will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Buyurtmalar -->
+        <div id="orders" class="tab-content">
+            <div class="orders-list" id="ordersList">
+                <!-- Orders will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Sozlamalar -->
+        <div id="settings" class="tab-content">
+            <form id="settingsForm" class="order-form">
+                <div class="form-group">
+                    <label for="settingsName">To'liq ism</label>
+                    <input type="text" id="settingsName" name="fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="settingsEmail">Email</label>
+                    <input type="email" id="settingsEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="settingsPhone">Telefon</label>
+                    <input type="tel" id="settingsPhone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="settingsPassword">Yangi parol (ixtiyoriy)</label>
+                    <input type="password" id="settingsPassword" name="password">
+                </div>
+                <button type="submit" class="btn btn-primary">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Buyurtma berish modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buyurtma berish</h2>
+                <span class="close" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <form id="orderForm" class="order-form">
+                <input type="hidden" id="serviceId" name="serviceId">
+                <div class="form-group">
+                    <label for="problem">Muammo tavsifi</label>
+                    <textarea id="problem" name="problem" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Buyurtma berish</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!token || !user) {
+            window.location.href = 'login.html';
+        }
+
+        // Update profile info
+        document.getElementById('profileName').textContent = user.fullname;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('profileAvatar').textContent = user.fullname.split(' ').map(n => n[0]).join('');
+
+        // Load services
+        async function loadServices() {
+            try {
+                const response = await fetch('/api/services');
+                if (response.ok) {
+                    const data = await response.json();
+                    const servicesGrid = document.getElementById('servicesGrid');
+                    servicesGrid.innerHTML = '';
+
+                    data.services.forEach(service => {
+                        const card = document.createElement('div');
+                        card.className = 'service-card';
+                        card.innerHTML = `
+                            <img src="${service.image}" alt="${service.name}" class="service-image">
+                            <div class="service-content">
+                                <h3 class="service-title">${service.name}</h3>
+                                <p class="service-description">${service.description}</p>
+                                <p class="service-price">Narx: ${service.price} so'm dan</p>
+                                <button class="btn btn-primary" onclick="showOrderModal(${service.id})">
+                                    Buyurtma berish
+                                </button>
+                            </div>
+                        `;
+                        servicesGrid.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Xizmatlarni yuklashda xatolik');
+            }
+        }
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/orders/my', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const orders = await response.json();
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+
+                    orders.forEach(order => {
+                        let statusClass = '';
+                        let statusText = '';
+                        
+                        switch(order.status) {
+                            case 'pending':
+                                statusClass = 'status-pending';
+                                statusText = 'Kutilmoqda';
+                                break;
+                            case 'approved':
+                                statusClass = 'status-approved';
+                                statusText = 'Tasdiqlangan';
+                                break;
+                            case 'in_progress':
+                                statusClass = 'status-in-progress';
+                                statusText = 'Jarayonda';
+                                break;
+                            case 'completed':
+                                statusClass = 'status-completed';
+                                statusText = 'Bajarildi';
+                                break;
+                            case 'cancelled':
+                                statusClass = 'status-cancelled';
+                                statusText = 'Bekor qilingan';
+                                break;
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = 'order-card';
+                        card.innerHTML = `
+                            <div class="order-header">
+                                <span class="order-service">${order.serviceName}</span>
+                                <span class="order-date">${new Date(order.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="order-details">
+                                <p><strong>Muammo:</strong> ${order.problem}</p>
+                                ${order.comments ? `<p><strong>Izohlar:</strong> ${order.comments}</p>` : ''}
+                                ${order.estimatedTime ? `<p><strong>Taxminiy vaqt:</strong> ${order.estimatedTime} soat</p>` : ''}
+                            </div>
+                            <div class="order-footer">
+                                <span class="order-status ${statusClass}">${statusText}</span>
+                                ${order.price ? `<span class="order-price">${order.price.toLocaleString()} so'm</span>` : ''}
+                            </div>
+                        `;
+                        ordersList.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Buyurtmalarni yuklashda xatolik');
+            }
+        }
+
+        // Show order modal
+        function showOrderModal(serviceId) {
+            document.getElementById('serviceId').value = serviceId;
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        // Close order modal
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            document.getElementById('orderForm').reset();
+        }
+
+        // Handle order form submission
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const orderData = {
+                serviceId: formData.get('serviceId'),
+                problem: formData.get('problem')
+            };
+            
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (response.ok) {
+                    alert('Buyurtma muvaffaqiyatli yuborildi');
+                    closeOrderModal();
+                    loadOrders();
+                    showTab('orders');
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Buyurtma yuborishda xatolik');
+            }
+        });
+
+        // Handle settings form submission
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = {
+                fullname: formData.get('fullname'),
+                email: formData.get('email'),
+                phone: formData.get('phone')
+            };
+
+            if (formData.get('password')) {
+                userData.password = formData.get('password');
+            }
+            
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    
+                    // Update profile info
+                    document.getElementById('profileName').textContent = updatedUser.fullname;
+                    document.getElementById('profileEmail').textContent = updatedUser.email;
+                    document.getElementById('profileAvatar').textContent = 
+                        updatedUser.fullname.split(' ').map(n => n[0]).join('');
+
+                    alert('Profil muvaffaqiyatli yangilandi');
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Xatolik yuz berdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Profilni yangilashda xatolik');
+            }
+        });
+
+        // Fill settings form with current user data
+        document.getElementById('settingsName').value = user.fullname;
+        document.getElementById('settingsEmail').value = user.email;
+        document.getElementById('settingsPhone').value = user.phone;
+
+        // Handle tab switching
+        function showTab(tabId) {
+            // Update buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+
+            // Load content if needed
+            if (tabId === 'orders') {
+                loadOrders();
+            }
+        }
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // Load initial data
+        loadServices();
+        loadOrders();
+    </script>
+</body>
+</html> 
+</html> 

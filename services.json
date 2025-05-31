@@ -1,0 +1,32 @@
+{
+  "services": [
+    {
+      "id": 1,
+      "name": "Kompyuter ta'mirlash",
+      "description": "Kompyuter nosozliklarini aniqlash va ta'mirlash",
+      "minPrice": 100000,
+      "maxPrice": 500000
+    },
+    {
+      "id": 2,
+      "name": "Windows o'rnatish",
+      "description": "Windows operatsion tizimini o'rnatish va sozlash",
+      "minPrice": 50000,
+      "maxPrice": 150000
+    },
+    {
+      "id": 3,
+      "name": "Viruslarni tozalash",
+      "description": "Kompyuterni viruslardan tozalash va himoya o'rnatish",
+      "minPrice": 80000,
+      "maxPrice": 200000
+    },
+    {
+      "id": 4,
+      "name": "Ma'lumotlarni tiklash",
+      "description": "O'chirilgan yoki yo'qolgan ma'lumotlarni tiklash",
+      "minPrice": 200000,
+      "maxPrice": 1000000
+    }
+  ]
+} 
