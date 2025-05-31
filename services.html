@@ -246,7 +246,7 @@
                     card.innerHTML = `
                         <h3 class="service-name">${service.name}</h3>
                         <p class="service-description">${service.description}</p>
-                        <p class="service-price">${service.minPrice.toLocaleString()} - ${service.maxPrice.toLocaleString()} so'm</p>
+                        <p class="service-price">${service.minPrice ? service.minPrice.toLocaleString() : '0'} - ${service.maxPrice ? service.maxPrice.toLocaleString() : '0'} so'm</p>
                         <button class="order-btn" onclick="showOrderModal(${service.id})">Buyurtma berish</button>
                     `;
                     servicesGrid.appendChild(card);
